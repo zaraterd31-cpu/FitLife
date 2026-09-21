@@ -116,6 +116,18 @@
     transform: translateY(-3px);
   }
 
+  .telefono-contacto {
+    margin-top: 18px;
+    font-size: 1.05rem;
+    color: var(--blanco);
+    font-weight: 600;
+  }
+
+  .telefono-contacto a {
+    color: var(--blanco);
+    text-decoration: underline;
+  }
+
   .servicios {
     padding: 80px 8%;
     text-align: center;
@@ -290,7 +302,10 @@
 <section class="hero" id="inicio">
   <h1>Alcanza tus metas con acompañamiento profesional real</h1>
   <p>Rastrea tus comidas y entrenamientos, y visualiza tu progreso guiado por profesionales de la salud.</p>
-  <button class="btn-primary">Comienza gratis</button>
+  <button class="btn-primary" id="btn-comenzar" onclick="mostrarTelefono()">Comienza gratis</button>
+  <p class="telefono-contacto" id="telefono-contacto" style="display:none;">
+    Llámanos al <a href="tel:5585530226">55 8553 0226</a>
+  </p>
 </section>
 
 <section class="servicios" id="servicios">
@@ -345,5 +360,12 @@
   <p>&copy; 2026 FitLife. Todos los derechos reservados.</p>
 </footer>
 
+<script>
+  function mostrarTelefono() {
+    document.getElementById('telefono-contacto').style.display = 'block';
+  }
+</script>
+
 </body>
 </html>
+
