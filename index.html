@@ -14,6 +14,8 @@
     --blanco: #FFFFFF;
     --texto-oscuro: #1A1A1A;
     --texto-gris: #5A6560;
+    --rojo-error: #D64545;
+    --verde-ok: #3D7A3D;
   }
 
   * {
@@ -116,16 +118,89 @@
     transform: translateY(-3px);
   }
 
-  .telefono-contacto {
-    margin-top: 18px;
-    font-size: 1.05rem;
-    color: var(--blanco);
-    font-weight: 600;
+  /* Formulario de registro */
+  .form-registro {
+    display: none;
+    margin-top: 30px;
+    background-color: var(--blanco);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 380px;
+    text-align: left;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.2);
   }
 
-  .telefono-contacto a {
-    color: var(--blanco);
-    text-decoration: underline;
+  .form-registro.visible {
+    display: block;
+  }
+
+  .form-registro h3 {
+    color: var(--verde-oscuro);
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .campo-grupo {
+    margin-bottom: 16px;
+  }
+
+  .campo-grupo label {
+    display: block;
+    color: var(--texto-oscuro);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .campo-grupo input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #DDE1D6;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  .campo-grupo input:focus {
+    outline: none;
+    border-color: var(--verde-principal);
+  }
+
+  .campo-grupo input.campo-error {
+    border-color: var(--rojo-error);
+  }
+
+  .mensaje-error {
+    color: var(--rojo-error);
+    font-size: 0.82rem;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .mensaje-error.visible {
+    display: block;
+  }
+
+  .mensaje-confirmacion {
+    color: var(--verde-ok);
+    background-color: #E7F3E7;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .mensaje-confirmacion.visible {
+    display: block;
+  }
+
+  .form-registro .btn-primary {
+    width: 100%;
+    margin-top: 8px;
   }
 
   .servicios {
@@ -253,6 +328,11 @@
     font-size: 0.9rem;
   }
 
+  footer a {
+    color: var(--blanco);
+    text-decoration: underline;
+  }
+
   @media (max-width: 900px) {
     .galeria-grid {
       grid-template-columns: repeat(2, 1fr);
@@ -302,10 +382,32 @@
 <section class="hero" id="inicio">
   <h1>Alcanza tus metas con acompañamiento profesional real</h1>
   <p>Rastrea tus comidas y entrenamientos, y visualiza tu progreso guiado por profesionales de la salud.</p>
-  <button class="btn-primary" id="btn-comenzar" onclick="mostrarTelefono()">Comienza gratis</button>
-  <p class="telefono-contacto" id="telefono-contacto" style="display:none;">
-    Llámanos al <a href="tel:5585530226">55 8553 0226</a>
-  </p>
+  <button class="btn-primary" id="btn-comenzar" onclick="mostrarFormulario()">Comienza gratis</button>
+
+  <form class="form-registro" id="form-registro" novalidate>
+    <h3>Crea tu cuenta gratis</h3>
+
+    <div class="campo-grupo">
+      <label for="campo-nombre">Nombre</label>
+      <input type="text" id="campo-nombre" name="nombre" placeholder="Tu nombre completo">
+      <span class="mensaje-error" id="error-nombre"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-correo">Correo</label>
+      <input type="text" id="campo-correo" name="correo" placeholder="tucorreo@ejemplo.com">
+      <span class="mensaje-error" id="error-correo"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-telefono">Teléfono</label>
+      <input type="text" id="campo-telefono" name="telefono" placeholder="10 dígitos, ej. 5585530226">
+      <span class="mensaje-error" id="error-telefono"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Enviar</button>
+    <p class="mensaje-confirmacion" id="mensaje-confirmacion">¡Listo! Te contactaremos pronto.</p>
+  </form>
 </section>
 
 <section class="servicios" id="servicios">
@@ -357,15 +459,80 @@
 </section>
 
 <footer id="contacto">
-  <p>&copy; 2026 FitLife. Todos los derechos reservados.</p>
+  <p>&copy; 2026 FitLife. Todos los derechos reservados. · Llámanos al <a href="tel:5585530226">55 8553 0226</a></p>
 </footer>
 
 <script>
-  function mostrarTelefono() {
-    document.getElementById('telefono-contacto').style.display = 'block';
+  function mostrarFormulario() {
+    document.getElementById('form-registro').classList.add('visible');
+    document.getElementById('btn-comenzar').style.display = 'none';
   }
+
+  document.getElementById('form-registro').addEventListener('submit', function (evento) {
+    evento.preventDefault();
+
+    // Definimos los campos a recorrer: cada uno con su regla de validación
+    var campos = [
+      {
+        id: 'nombre',
+        valor: document.getElementById('campo-nombre').value.trim(),
+        validar: function (valor) {
+          return valor.length > 0;
+        },
+        mensajeError: 'Ingresa tu nombre.'
+      },
+      {
+        id: 'correo',
+        valor: document.getElementById('campo-correo').value.trim(),
+        validar: function (valor) {
+          var patronCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return patronCorreo.test(valor);
+        },
+        mensajeError: 'Ingresa un correo válido.'
+      },
+      {
+        id: 'telefono',
+        valor: document.getElementById('campo-telefono').value.trim(),
+        validar: function (valor) {
+          var patronTelefono = /^\d{10}$/;
+          return patronTelefono.test(valor);
+        },
+        mensajeError: 'El teléfono debe tener 10 dígitos.'
+      }
+    ];
+
+    var hayErrores = false;
+
+    // Repetición: recorremos cada campo del formulario y lo validamos
+    for (var i = 0; i < campos.length; i++) {
+      var campo = campos[i];
+      var inputEl = document.getElementById('campo-' + campo.id);
+      var errorEl = document.getElementById('error-' + campo.id);
+
+      // Condición: si el campo no pasa su validación, mostramos su error específico
+      if (!campo.validar(campo.valor)) {
+        inputEl.classList.add('campo-error');
+        errorEl.textContent = campo.mensajeError;
+        errorEl.classList.add('visible');
+        hayErrores = true;
+      } else {
+        inputEl.classList.remove('campo-error');
+        errorEl.classList.remove('visible');
+        errorEl.textContent = '';
+      }
+      // el ciclo sigue revisando los demás campos sin detenerse aquí
+    }
+
+    var mensajeConfirmacion = document.getElementById('mensaje-confirmacion');
+
+    if (hayErrores) {
+      mensajeConfirmacion.classList.remove('visible');
+    } else {
+      mensajeConfirmacion.classList.add('visible');
+      // Aquí es donde normalmente se enviarían los datos a un servidor
+    }
+  });
 </script>
 
 </body>
 </html>
-
