@@ -528,8 +528,27 @@
     if (hayErrores) {
       mensajeConfirmacion.classList.remove('visible');
     } else {
-      mensajeConfirmacion.classList.add('visible');
-      // Aquí es donde normalmente se enviarían los datos a un servidor
+      var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
+
+      fetch(URL_SCRIPT, {
+        method: 'POST',
+        body: JSON.stringify({
+          nombre: campos[0].valor,
+          correo: campos[1].valor,
+          telefono: campos[2].valor
+        })
+      })
+      .then(function () {
+        mensajeConfirmacion.textContent = '¡Listo! Te contactaremos pronto.';
+        mensajeConfirmacion.style.color = 'var(--verde-ok)';
+        mensajeConfirmacion.classList.add('visible');
+        document.getElementById('form-registro').reset();
+      })
+      .catch(function () {
+        mensajeConfirmacion.textContent = 'Hubo un error al enviar. Intenta de nuevo.';
+        mensajeConfirmacion.style.color = 'var(--rojo-error)';
+        mensajeConfirmacion.classList.add('visible');
+      });
     }
   });
 </script>
