@@ -524,10 +524,15 @@
     }
 
     var mensajeConfirmacion = document.getElementById('mensaje-confirmacion');
+    var botonEnviar = document.querySelector('#form-registro button[type="submit"]');
 
     if (hayErrores) {
       mensajeConfirmacion.classList.remove('visible');
     } else {
+      // Desactivamos el botón para que no se pueda enviar dos veces mientras espera respuesta
+      botonEnviar.disabled = true;
+      botonEnviar.textContent = 'Enviando...';
+
       var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
       fetch(URL_SCRIPT, {
@@ -548,6 +553,10 @@
         mensajeConfirmacion.textContent = 'Hubo un error al enviar. Intenta de nuevo.';
         mensajeConfirmacion.style.color = 'var(--rojo-error)';
         mensajeConfirmacion.classList.add('visible');
+      })
+      .finally(function () {
+        botonEnviar.disabled = false;
+        botonEnviar.textContent = 'Enviar';
       });
     }
   });
