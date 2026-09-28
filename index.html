@@ -40,7 +40,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px 8%;
-    background-color: var(--azul-oscuro);
+    /* Barra oscura semitransparente para combinar con las fotos */
+    background-color: rgba(12, 16, 22, 0.92);
+    backdrop-filter: blur(8px);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -213,16 +215,23 @@
   .servicios {
     padding: 80px 8%;
     text-align: center;
+    /* Foto de entrenamiento en el gimnasio con capa oscura */
+    background-color: #14181d;
+    background-image:
+      linear-gradient(rgba(12, 16, 22, 0.82), rgba(12, 16, 22, 0.82)),
+      url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1920&q=70");
+    background-size: cover;
+    background-position: center;
   }
 
   .servicios h2 {
     font-size: 2.2rem;
-    color: var(--azul-oscuro);
+    color: var(--blanco);
     margin-bottom: 12px;
   }
 
   .servicios > p {
-    color: var(--texto-gris);
+    color: #D6DEE6;
     max-width: 600px;
     margin: 0 auto 50px;
     font-size: 1.05rem;
@@ -281,17 +290,23 @@
   .galeria {
     padding: 80px 8%;
     text-align: center;
-    background-color: var(--blanco);
+    /* Foto de persona corriendo al aire libre con capa oscura */
+    background-color: #14181d;
+    background-image:
+      linear-gradient(rgba(12, 16, 22, 0.8), rgba(12, 16, 22, 0.8)),
+      url("https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1920&q=70");
+    background-size: cover;
+    background-position: center;
   }
 
   .galeria h2 {
     font-size: 2.2rem;
-    color: var(--azul-oscuro);
+    color: var(--blanco);
     margin-bottom: 12px;
   }
 
   .galeria > p {
-    color: var(--texto-gris);
+    color: #D6DEE6;
     max-width: 600px;
     margin: 0 auto 40px;
     font-size: 1.05rem;
@@ -324,12 +339,18 @@
   .galeria-grid figcaption {
     margin-top: 8px;
     font-size: 0.85rem;
-    color: var(--texto-gris);
+    color: #D6DEE6;
   }
 
   footer {
-    background-color: var(--azul-oscuro);
-    color: #B9D6EC;
+    /* Foto de comida saludable con capa oscura */
+    background-color: #0c1016;
+    background-image:
+      linear-gradient(rgba(12, 16, 22, 0.88), rgba(12, 16, 22, 0.88)),
+      url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1920&q=60");
+    background-size: cover;
+    background-position: center;
+    color: #C9D3DC;
     text-align: center;
     padding: 26px 8%;
     font-size: 0.9rem;
