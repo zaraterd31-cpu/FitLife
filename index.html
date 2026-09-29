@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -627,7 +628,6 @@
         correo: campos[1].valor,
         telefono: campos[2].valor
       }));
-      localStorage.setItem('fitlifeRegistrado', 'true');
 
       mensajeConfirmacion.textContent = '¡Listo! Ahora completa tu peso, edad y estatura abajo para terminar.';
       mensajeConfirmacion.style.color = 'var(--verde-ok)';
@@ -646,8 +646,11 @@
 
     var mensajeConfirmacionNutricion = document.getElementById('mensaje-confirmacion-nutricion');
 
-    // Bloqueamos el envío si la persona todavía no se ha registrado arriba
-    if (localStorage.getItem('fitlifeRegistrado') !== 'true') {
+    // Bloqueamos el envío si la persona todavía no se ha registrado arriba.
+    // Usamos la existencia de sus datos guardados como única señal de que ya se registró.
+    var datosRegistroGuardados = localStorage.getItem('fitlifeDatosRegistro');
+
+    if (!datosRegistroGuardados) {
       mensajeConfirmacionNutricion.textContent = 'Primero debes registrarte con tu nombre, correo y teléfono arriba.';
       mensajeConfirmacionNutricion.style.color = 'var(--rojo-error)';
       mensajeConfirmacionNutricion.classList.add('visible');
@@ -717,7 +720,7 @@
       botonGuardar.textContent = 'Guardando...';
 
       // Juntamos los datos del registro (guardados antes) con los de nutrición
-      var datosRegistro = JSON.parse(localStorage.getItem('fitlifeDatosRegistro') || '{}');
+      var datosRegistro = JSON.parse(datosRegistroGuardados);
 
       var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
@@ -739,7 +742,6 @@
         document.getElementById('form-nutricion').reset();
         // Limpiamos lo guardado para que un nuevo registro empiece de cero
         localStorage.removeItem('fitlifeDatosRegistro');
-        localStorage.removeItem('fitlifeRegistrado');
       })
       .catch(function () {
         mensajeConfirmacion.textContent = 'Hubo un error al guardar. Intenta de nuevo.';
