@@ -617,41 +617,23 @@
     }
 
     var mensajeConfirmacion = document.getElementById('mensaje-confirmacion');
-    var botonEnviar = document.querySelector('#form-registro button[type="submit"]');
 
     if (hayErrores) {
       mensajeConfirmacion.classList.remove('visible');
     } else {
-      // Desactivamos el botón para que no se pueda enviar dos veces mientras espera respuesta
-      botonEnviar.disabled = true;
-      botonEnviar.textContent = 'Enviando...';
+      // Todavía no lo mandamos a la hoja: solo lo guardamos en el navegador.
+      // Se enviará junto con los datos de nutrición en un solo registro.
+      localStorage.setItem('fitlifeDatosRegistro', JSON.stringify({
+        nombre: campos[0].valor,
+        correo: campos[1].valor,
+        telefono: campos[2].valor
+      }));
+      localStorage.setItem('fitlifeRegistrado', 'true');
 
-      var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
-
-      fetch(URL_SCRIPT, {
-        method: 'POST',
-        body: JSON.stringify({
-          tipo: 'registro',
-          nombre: campos[0].valor,
-          correo: campos[1].valor,
-          telefono: campos[2].valor
-        })
-      })
-      .then(function () {
-        mensajeConfirmacion.textContent = '¡Listo! Te contactaremos pronto.';
-        mensajeConfirmacion.style.color = 'var(--verde-ok)';
-        mensajeConfirmacion.classList.add('visible');
-        document.getElementById('form-registro').reset();
-      })
-      .catch(function () {
-        mensajeConfirmacion.textContent = 'Hubo un error al enviar. Intenta de nuevo.';
-        mensajeConfirmacion.style.color = 'var(--rojo-error)';
-        mensajeConfirmacion.classList.add('visible');
-      })
-      .finally(function () {
-        botonEnviar.disabled = false;
-        botonEnviar.textContent = 'Enviar';
-      });
+      mensajeConfirmacion.textContent = '¡Listo! Ahora completa tu peso, edad y estatura abajo para terminar.';
+      mensajeConfirmacion.style.color = 'var(--verde-ok)';
+      mensajeConfirmacion.classList.add('visible');
+      document.getElementById('form-registro').reset();
     }
   });
 
@@ -662,6 +644,16 @@
 
   document.getElementById('form-nutricion').addEventListener('submit', function (evento) {
     evento.preventDefault();
+
+    var mensajeConfirmacionNutricion = document.getElementById('mensaje-confirmacion-nutricion');
+
+    // Bloqueamos el envío si la persona todavía no se ha registrado arriba
+    if (localStorage.getItem('fitlifeRegistrado') !== 'true') {
+      mensajeConfirmacionNutricion.textContent = 'Primero debes registrarte con tu nombre, correo y teléfono arriba.';
+      mensajeConfirmacionNutricion.style.color = 'var(--rojo-error)';
+      mensajeConfirmacionNutricion.classList.add('visible');
+      return;
+    }
 
     // Definimos los campos a recorrer: cada uno con su regla de validación
     var campos = [
@@ -725,22 +717,30 @@
       botonGuardar.disabled = true;
       botonGuardar.textContent = 'Guardando...';
 
+      // Juntamos los datos del registro (guardados antes) con los de nutrición
+      var datosRegistro = JSON.parse(localStorage.getItem('fitlifeDatosRegistro') || '{}');
+
       var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
       fetch(URL_SCRIPT, {
         method: 'POST',
         body: JSON.stringify({
-          tipo: 'nutricion',
+          nombre: datosRegistro.nombre || '',
+          correo: datosRegistro.correo || '',
+          telefono: datosRegistro.telefono || '',
           peso: campos[0].valor,
           edad: campos[1].valor,
           estatura: campos[2].valor
         })
       })
       .then(function () {
-        mensajeConfirmacion.textContent = '¡Listo! Ya podemos personalizar tu rastreo.';
+        mensajeConfirmacion.textContent = '¡Listo! Tus datos quedaron registrados.';
         mensajeConfirmacion.style.color = 'var(--verde-ok)';
         mensajeConfirmacion.classList.add('visible');
         document.getElementById('form-nutricion').reset();
+        // Limpiamos lo guardado para que un nuevo registro empiece de cero
+        localStorage.removeItem('fitlifeDatosRegistro');
+        localStorage.removeItem('fitlifeRegistrado');
       })
       .catch(function () {
         mensajeConfirmacion.textContent = 'Hubo un error al guardar. Intenta de nuevo.';
