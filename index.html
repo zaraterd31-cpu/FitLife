@@ -40,9 +40,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px 8%;
-    /* Barra oscura semitransparente para combinar con las fotos */
-    background-color: rgba(12, 16, 22, 0.92);
-    backdrop-filter: blur(8px);
+    background-color: var(--azul-oscuro);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -86,13 +84,7 @@
     text-align: center;
     min-height: 80vh;
     padding: 60px 8%;
-    /* Foto de gimnasio con una capa oscura encima para que el texto se lea bien */
-    background-color: #14181d;
-    background-image:
-      linear-gradient(180deg, rgba(12, 16, 22, 0.78) 0%, rgba(12, 16, 22, 0.55) 55%, rgba(12, 16, 22, 0.8) 100%),
-      url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1920&q=75");
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-principal) 100%);
     color: var(--blanco);
   }
 
@@ -100,14 +92,13 @@
     font-size: 3rem;
     margin-bottom: 20px;
     max-width: 800px;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
   }
 
   .hero p {
     font-size: 1.25rem;
     max-width: 600px;
     margin-bottom: 36px;
-    color: #E8EDF2;
+    color: #DCEAF5;
   }
 
   .btn-primary {
@@ -212,26 +203,57 @@
     margin-top: 8px;
   }
 
+  /* Formulario de rastreo nutricional */
+  .form-nutricion {
+    display: none;
+    margin-top: 20px;
+    background-color: var(--gris-fondo);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: left;
+  }
+
+  .form-nutricion.visible {
+    display: block;
+  }
+
+  .form-nutricion h4 {
+    color: var(--azul-oscuro);
+    margin-bottom: 14px;
+    font-size: 1rem;
+  }
+
+  .btn-card {
+    background-color: transparent;
+    color: var(--azul-principal);
+    border: 2px solid var(--azul-principal);
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-card:hover {
+    background-color: var(--azul-principal);
+    color: var(--blanco);
+  }
+
   .servicios {
     padding: 80px 8%;
     text-align: center;
-    /* Foto de entrenamiento en el gimnasio con capa oscura */
-    background-color: #14181d;
-    background-image:
-      linear-gradient(rgba(12, 16, 22, 0.82), rgba(12, 16, 22, 0.82)),
-      url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1920&q=70");
-    background-size: cover;
-    background-position: center;
   }
 
   .servicios h2 {
     font-size: 2.2rem;
-    color: var(--blanco);
+    color: var(--azul-oscuro);
     margin-bottom: 12px;
   }
 
   .servicios > p {
-    color: #D6DEE6;
+    color: var(--texto-gris);
     max-width: 600px;
     margin: 0 auto 50px;
     font-size: 1.05rem;
@@ -290,23 +312,17 @@
   .galeria {
     padding: 80px 8%;
     text-align: center;
-    /* Foto de persona corriendo al aire libre con capa oscura */
-    background-color: #14181d;
-    background-image:
-      linear-gradient(rgba(12, 16, 22, 0.8), rgba(12, 16, 22, 0.8)),
-      url("https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1920&q=70");
-    background-size: cover;
-    background-position: center;
+    background-color: var(--blanco);
   }
 
   .galeria h2 {
     font-size: 2.2rem;
-    color: var(--blanco);
+    color: var(--azul-oscuro);
     margin-bottom: 12px;
   }
 
   .galeria > p {
-    color: #D6DEE6;
+    color: var(--texto-gris);
     max-width: 600px;
     margin: 0 auto 40px;
     font-size: 1.05rem;
@@ -339,18 +355,12 @@
   .galeria-grid figcaption {
     margin-top: 8px;
     font-size: 0.85rem;
-    color: #D6DEE6;
+    color: var(--texto-gris);
   }
 
   footer {
-    /* Foto de comida saludable con capa oscura */
-    background-color: #0c1016;
-    background-image:
-      linear-gradient(rgba(12, 16, 22, 0.88), rgba(12, 16, 22, 0.88)),
-      url("https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1920&q=60");
-    background-size: cover;
-    background-position: center;
-    color: #C9D3DC;
+    background-color: var(--azul-oscuro);
+    color: #B9D6EC;
     text-align: center;
     padding: 26px 8%;
     font-size: 0.9rem;
@@ -447,6 +457,32 @@
       <h3>Rastreo Nutricional</h3>
       <span class="dato">Gratis</span>
       <p class="desc">Registra tus comidas diarias y recibe un análisis claro de tus macros y calorías.</p>
+      <button class="btn-card" id="btn-nutricion" onclick="mostrarFormularioNutricion()">Empezar gratis</button>
+
+      <form class="form-nutricion" id="form-nutricion" novalidate>
+        <h4>Cuéntanos de ti para personalizar tu rastreo</h4>
+
+        <div class="campo-grupo">
+          <label for="campo-peso">Peso (kg)</label>
+          <input type="text" id="campo-peso" name="peso" placeholder="Ej. 68">
+          <span class="mensaje-error" id="error-peso"></span>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="campo-edad">Edad</label>
+          <input type="text" id="campo-edad" name="edad" placeholder="Ej. 27">
+          <span class="mensaje-error" id="error-edad"></span>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="campo-estatura">Estatura (cm)</label>
+          <input type="text" id="campo-estatura" name="estatura" placeholder="Ej. 170">
+          <span class="mensaje-error" id="error-estatura"></span>
+        </div>
+
+        <button type="submit" class="btn-primary">Guardar</button>
+        <p class="mensaje-confirmacion" id="mensaje-confirmacion-nutricion">¡Listo! Ya podemos personalizar tu rastreo.</p>
+      </form>
     </div>
     <div class="card">
       <div class="card-icon">🏋️</div>
@@ -566,6 +602,7 @@
       fetch(URL_SCRIPT, {
         method: 'POST',
         body: JSON.stringify({
+          tipo: 'registro',
           nombre: campos[0].valor,
           correo: campos[1].valor,
           telefono: campos[2].valor
@@ -585,6 +622,105 @@
       .finally(function () {
         botonEnviar.disabled = false;
         botonEnviar.textContent = 'Enviar';
+      });
+    }
+  });
+
+  function mostrarFormularioNutricion() {
+    document.getElementById('form-nutricion').classList.add('visible');
+    document.getElementById('btn-nutricion').style.display = 'none';
+  }
+
+  document.getElementById('form-nutricion').addEventListener('submit', function (evento) {
+    evento.preventDefault();
+
+    // Definimos los campos a recorrer: cada uno con su regla de validación
+    var campos = [
+      {
+        id: 'peso',
+        valor: document.getElementById('campo-peso').value.trim(),
+        validar: function (valor) {
+          var numero = Number(valor);
+          return valor !== '' && !isNaN(numero) && numero >= 20 && numero <= 300;
+        },
+        mensajeError: 'Ingresa un peso válido en kg (20-300).'
+      },
+      {
+        id: 'edad',
+        valor: document.getElementById('campo-edad').value.trim(),
+        validar: function (valor) {
+          var numero = Number(valor);
+          return valor !== '' && Number.isInteger(numero) && numero >= 10 && numero <= 100;
+        },
+        mensajeError: 'Ingresa una edad válida (10-100).'
+      },
+      {
+        id: 'estatura',
+        valor: document.getElementById('campo-estatura').value.trim(),
+        validar: function (valor) {
+          var numero = Number(valor);
+          return valor !== '' && !isNaN(numero) && numero >= 100 && numero <= 250;
+        },
+        mensajeError: 'Ingresa una estatura válida en cm (100-250).'
+      }
+    ];
+
+    var hayErrores = false;
+
+    // Repetición: recorremos cada campo del formulario y lo validamos
+    for (var i = 0; i < campos.length; i++) {
+      var campo = campos[i];
+      var inputEl = document.getElementById('campo-' + campo.id);
+      var errorEl = document.getElementById('error-' + campo.id);
+
+      // Condición: si el campo no pasa su validación, mostramos su error específico
+      if (!campo.validar(campo.valor)) {
+        inputEl.classList.add('campo-error');
+        errorEl.textContent = campo.mensajeError;
+        errorEl.classList.add('visible');
+        hayErrores = true;
+      } else {
+        inputEl.classList.remove('campo-error');
+        errorEl.classList.remove('visible');
+        errorEl.textContent = '';
+      }
+      // el ciclo sigue revisando los demás campos sin detenerse aquí
+    }
+
+    var mensajeConfirmacion = document.getElementById('mensaje-confirmacion-nutricion');
+    var botonGuardar = document.querySelector('#form-nutricion button[type="submit"]');
+
+    if (hayErrores) {
+      mensajeConfirmacion.classList.remove('visible');
+    } else {
+      botonGuardar.disabled = true;
+      botonGuardar.textContent = 'Guardando...';
+
+      var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
+
+      fetch(URL_SCRIPT, {
+        method: 'POST',
+        body: JSON.stringify({
+          tipo: 'nutricion',
+          peso: campos[0].valor,
+          edad: campos[1].valor,
+          estatura: campos[2].valor
+        })
+      })
+      .then(function () {
+        mensajeConfirmacion.textContent = '¡Listo! Ya podemos personalizar tu rastreo.';
+        mensajeConfirmacion.style.color = 'var(--verde-ok)';
+        mensajeConfirmacion.classList.add('visible');
+        document.getElementById('form-nutricion').reset();
+      })
+      .catch(function () {
+        mensajeConfirmacion.textContent = 'Hubo un error al guardar. Intenta de nuevo.';
+        mensajeConfirmacion.style.color = 'var(--rojo-error)';
+        mensajeConfirmacion.classList.add('visible');
+      })
+      .finally(function () {
+        botonGuardar.disabled = false;
+        botonGuardar.textContent = 'Guardar';
       });
     }
   });
