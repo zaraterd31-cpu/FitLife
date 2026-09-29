@@ -213,44 +213,6 @@
     margin-top: 8px;
   }
 
-  /* Formulario de rastreo nutricional */
-  .form-nutricion {
-    display: none;
-    margin-top: 20px;
-    background-color: var(--gris-fondo);
-    border-radius: 12px;
-    padding: 24px;
-    text-align: left;
-  }
-
-  .form-nutricion.visible {
-    display: block;
-  }
-
-  .form-nutricion h4 {
-    color: var(--azul-oscuro);
-    margin-bottom: 14px;
-    font-size: 1rem;
-  }
-
-  .btn-card {
-    background-color: transparent;
-    color: var(--azul-principal);
-    border: 2px solid var(--azul-principal);
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    margin-top: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-
-  .btn-card:hover {
-    background-color: var(--azul-principal);
-    color: var(--blanco);
-  }
-
   .servicios {
     padding: 80px 8%;
     text-align: center;
@@ -486,32 +448,6 @@
       <h3>Rastreo Nutricional</h3>
       <span class="dato">Gratis</span>
       <p class="desc">Registra tus comidas diarias y recibe un análisis claro de tus macros y calorías.</p>
-      <button class="btn-card" id="btn-nutricion" onclick="mostrarFormularioNutricion()">Empezar gratis</button>
-
-      <form class="form-nutricion" id="form-nutricion" novalidate>
-        <h4>Cuéntanos de ti para personalizar tu rastreo</h4>
-
-        <div class="campo-grupo">
-          <label for="campo-peso">Peso (kg)</label>
-          <input type="text" id="campo-peso" name="peso" placeholder="Ej. 68">
-          <span class="mensaje-error" id="error-peso"></span>
-        </div>
-
-        <div class="campo-grupo">
-          <label for="campo-edad">Edad</label>
-          <input type="text" id="campo-edad" name="edad" placeholder="Ej. 27">
-          <span class="mensaje-error" id="error-edad"></span>
-        </div>
-
-        <div class="campo-grupo">
-          <label for="campo-estatura">Estatura (cm)</label>
-          <input type="text" id="campo-estatura" name="estatura" placeholder="Ej. 170">
-          <span class="mensaje-error" id="error-estatura"></span>
-        </div>
-
-        <button type="submit" class="btn-primary">Guardar</button>
-        <p class="mensaje-confirmacion" id="mensaje-confirmacion-nutricion">¡Listo! Ya podemos personalizar tu rastreo.</p>
-      </form>
     </div>
     <div class="card">
       <div class="card-icon">🏋️</div>
@@ -617,140 +553,39 @@
     }
 
     var mensajeConfirmacion = document.getElementById('mensaje-confirmacion');
+    var botonEnviar = document.querySelector('#form-registro button[type="submit"]');
 
     if (hayErrores) {
       mensajeConfirmacion.classList.remove('visible');
     } else {
-      // Todavía no lo mandamos a la hoja: solo lo guardamos en el navegador.
-      // Se enviará junto con los datos de nutrición en un solo registro.
-      localStorage.setItem('fitlifeDatosRegistro', JSON.stringify({
-        nombre: campos[0].valor,
-        correo: campos[1].valor,
-        telefono: campos[2].valor
-      }));
-
-      mensajeConfirmacion.textContent = '¡Listo! Ahora completa tu peso, edad y estatura abajo para terminar.';
-      mensajeConfirmacion.style.color = 'var(--verde-ok)';
-      mensajeConfirmacion.classList.add('visible');
-      document.getElementById('form-registro').reset();
-    }
-  });
-
-  function mostrarFormularioNutricion() {
-    document.getElementById('form-nutricion').classList.add('visible');
-    document.getElementById('btn-nutricion').style.display = 'none';
-  }
-
-  document.getElementById('form-nutricion').addEventListener('submit', function (evento) {
-    evento.preventDefault();
-
-    var mensajeConfirmacionNutricion = document.getElementById('mensaje-confirmacion-nutricion');
-
-    // Bloqueamos el envío si la persona todavía no se ha registrado arriba.
-    // Usamos la existencia de sus datos guardados como única señal de que ya se registró.
-    var datosRegistroGuardados = localStorage.getItem('fitlifeDatosRegistro');
-
-    if (!datosRegistroGuardados) {
-      mensajeConfirmacionNutricion.textContent = 'Primero debes registrarte con tu nombre, correo y teléfono arriba.';
-      mensajeConfirmacionNutricion.style.color = 'var(--rojo-error)';
-      mensajeConfirmacionNutricion.classList.add('visible');
-      return;
-    }
-
-    // Definimos los campos a recorrer: cada uno con su regla de validación
-    var campos = [
-      {
-        id: 'peso',
-        valor: document.getElementById('campo-peso').value.trim(),
-        validar: function (valor) {
-          var numero = Number(valor);
-          return valor !== '' && !isNaN(numero) && numero >= 20 && numero <= 300;
-        },
-        mensajeError: 'Ingresa un peso válido en kg (20-300).'
-      },
-      {
-        id: 'edad',
-        valor: document.getElementById('campo-edad').value.trim(),
-        validar: function (valor) {
-          var numero = Number(valor);
-          return valor !== '' && Number.isInteger(numero) && numero >= 10 && numero <= 100;
-        },
-        mensajeError: 'Ingresa una edad válida (10-100).'
-      },
-      {
-        id: 'estatura',
-        valor: document.getElementById('campo-estatura').value.trim(),
-        validar: function (valor) {
-          var numero = Number(valor);
-          return valor !== '' && !isNaN(numero) && numero >= 100 && numero <= 250;
-        },
-        mensajeError: 'Ingresa una estatura válida en cm (100-250).'
-      }
-    ];
-
-    var hayErrores = false;
-
-    // Repetición: recorremos cada campo del formulario y lo validamos
-    for (var i = 0; i < campos.length; i++) {
-      var campo = campos[i];
-      var inputEl = document.getElementById('campo-' + campo.id);
-      var errorEl = document.getElementById('error-' + campo.id);
-
-      // Condición: si el campo no pasa su validación, mostramos su error específico
-      if (!campo.validar(campo.valor)) {
-        inputEl.classList.add('campo-error');
-        errorEl.textContent = campo.mensajeError;
-        errorEl.classList.add('visible');
-        hayErrores = true;
-      } else {
-        inputEl.classList.remove('campo-error');
-        errorEl.classList.remove('visible');
-        errorEl.textContent = '';
-      }
-      // el ciclo sigue revisando los demás campos sin detenerse aquí
-    }
-
-    var mensajeConfirmacion = document.getElementById('mensaje-confirmacion-nutricion');
-    var botonGuardar = document.querySelector('#form-nutricion button[type="submit"]');
-
-    if (hayErrores) {
-      mensajeConfirmacion.classList.remove('visible');
-    } else {
-      botonGuardar.disabled = true;
-      botonGuardar.textContent = 'Guardando...';
-
-      // Juntamos los datos del registro (guardados antes) con los de nutrición
-      var datosRegistro = JSON.parse(datosRegistroGuardados);
+      // Desactivamos el botón para que no se pueda enviar dos veces mientras espera respuesta
+      botonEnviar.disabled = true;
+      botonEnviar.textContent = 'Enviando...';
 
       var URL_SCRIPT = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
       fetch(URL_SCRIPT, {
         method: 'POST',
         body: JSON.stringify({
-          nombre: datosRegistro.nombre || '',
-          correo: datosRegistro.correo || '',
-          telefono: datosRegistro.telefono || '',
-          peso: campos[0].valor,
-          edad: campos[1].valor,
-          estatura: campos[2].valor
+          nombre: campos[0].valor,
+          correo: campos[1].valor,
+          telefono: campos[2].valor
         })
       })
       .then(function () {
-        mensajeConfirmacion.textContent = '¡Listo! Tus datos quedaron registrados.';
+        mensajeConfirmacion.textContent = '¡Listo! Te contactaremos pronto.';
         mensajeConfirmacion.style.color = 'var(--verde-ok)';
         mensajeConfirmacion.classList.add('visible');
-        document.getElementById('form-nutricion').reset();
-        // Limpiamos lo guardado para que un nuevo registro empiece de cero
-        localStorage.removeItem('fitlifeDatosRegistro');
+        document.getElementById('form-registro').reset();
       })
       .catch(function () {
-        mensajeConfirmacion.textContent = 'Hubo un error al guardar. Intenta de nuevo.';
+        mensajeConfirmacion.textContent = 'Hubo un error al enviar. Intenta de nuevo.';
         mensajeConfirmacion.style.color = 'var(--rojo-error)';
         mensajeConfirmacion.classList.add('visible');
       })
       .finally(function () {
-        botonGuardar.disabled = false;
-        botonGuardar.textContent = 'Guardar';
+        botonEnviar.disabled = false;
+        botonEnviar.textContent = 'Enviar';
       });
     }
   });
