@@ -402,6 +402,34 @@
       grid-template-columns: 1fr;
     }
   }
+
+  /* Registro de entrenamiento */
+  .entrenamiento {
+    padding: 60px 8%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-entrenamiento {
+    background-color: var(--blanco);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 24px rgba(27, 58, 92, 0.08);
+  }
+
+  .form-entrenamiento h2 {
+    color: var(--azul-oscuro);
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .form-entrenamiento .btn-primary {
+    width: 100%;
+    margin-top: 8px;
+  }
 </style>
 </head>
 <body>
@@ -443,6 +471,45 @@
 
     <button type="submit" class="btn-primary">Enviar</button>
     <p class="mensaje-confirmacion" id="mensaje-confirmacion">¡Listo! Te contactaremos pronto.</p>
+  </form>
+</section>
+
+<section class="entrenamiento" id="entrenamiento">
+  <form class="form-entrenamiento" id="form-entrenamiento" novalidate>
+    <h2>Registra tu entrenamiento</h2>
+
+    <div class="campo-grupo">
+      <label for="campo-ejercicio">Ejercicio</label>
+      <input type="text" id="campo-ejercicio" placeholder="Ej. Sentadilla">
+      <span class="mensaje-error" id="error-ejercicio"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-fecha">Fecha</label>
+      <input type="date" id="campo-fecha">
+      <span class="mensaje-error" id="error-fecha"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-serie">Número de serie</label>
+      <input type="number" id="campo-serie" min="1" step="1" placeholder="Ej. 1">
+      <span class="mensaje-error" id="error-serie"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-kilos">Kilos</label>
+      <input type="number" id="campo-kilos" min="0" step="any" placeholder="Ej. 60">
+      <span class="mensaje-error" id="error-kilos"></span>
+    </div>
+
+    <div class="campo-grupo">
+      <label for="campo-repeticiones">Repeticiones</label>
+      <input type="number" id="campo-repeticiones" min="1" step="1" placeholder="Ej. 8">
+      <span class="mensaje-error" id="error-repeticiones"></span>
+    </div>
+
+    <button type="submit" class="btn-primary">Guardar serie</button>
+    <p class="mensaje-confirmacion" id="mensaje-entrenamiento">Serie guardada.</p>
   </form>
 </section>
 
@@ -604,6 +671,81 @@
         botonEnviar.textContent = 'Enviar';
       });
     }
+  });
+
+  // ---- Registro de entrenamiento (guardado en localStorage) ----
+  var CLAVE_SERIES = 'fitlife_series';
+
+  function leerSeries() {
+    try {
+      var datos = JSON.parse(localStorage.getItem(CLAVE_SERIES));
+      return Array.isArray(datos) ? datos : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  document.getElementById('form-entrenamiento').addEventListener('submit', function (evento) {
+    evento.preventDefault();
+
+    var ejercicio = document.getElementById('campo-ejercicio').value.trim().replace(/\s+/g, ' ');
+    var fecha = document.getElementById('campo-fecha').value;
+    var serieTxt = document.getElementById('campo-serie').value;
+    var kilosTxt = document.getElementById('campo-kilos').value;
+    var repsTxt = document.getElementById('campo-repeticiones').value;
+
+    var serie = Number(serieTxt);
+    var kilos = Number(kilosTxt);
+    var repeticiones = Number(repsTxt);
+
+    var reglas = [
+      { id: 'ejercicio', ok: ejercicio.length > 0, mensaje: 'Ingresa el ejercicio.' },
+      { id: 'fecha', ok: fecha !== '', mensaje: 'Elige una fecha.' },
+      { id: 'serie', ok: serieTxt !== '' && Number.isInteger(serie) && serie >= 1, mensaje: 'Ingresa un número de serie entero (1 o más).' },
+      { id: 'kilos', ok: kilosTxt !== '' && isFinite(kilos) && kilos >= 0, mensaje: 'Ingresa los kilos (0 o más).' },
+      { id: 'repeticiones', ok: repsTxt !== '' && Number.isInteger(repeticiones) && repeticiones >= 1, mensaje: 'Ingresa repeticiones enteras (1 o más).' }
+    ];
+
+    var hayErrores = false;
+    for (var i = 0; i < reglas.length; i++) {
+      var inputEl = document.getElementById('campo-' + reglas[i].id);
+      var errorEl = document.getElementById('error-' + reglas[i].id);
+      if (!reglas[i].ok) {
+        inputEl.classList.add('campo-error');
+        errorEl.textContent = reglas[i].mensaje;
+        errorEl.classList.add('visible');
+        hayErrores = true;
+      } else {
+        inputEl.classList.remove('campo-error');
+        errorEl.classList.remove('visible');
+        errorEl.textContent = '';
+      }
+    }
+
+    var mensaje = document.getElementById('mensaje-entrenamiento');
+    if (hayErrores) {
+      mensaje.classList.remove('visible');
+      return;
+    }
+
+    try {
+      var series = leerSeries();
+      series.push({
+        ejercicio: ejercicio,
+        fecha: fecha,
+        serie: serie,
+        kilos: kilos,
+        repeticiones: repeticiones
+      });
+      localStorage.setItem(CLAVE_SERIES, JSON.stringify(series));
+      mensaje.textContent = 'Serie guardada.';
+      mensaje.style.color = 'var(--verde-ok)';
+      document.getElementById('form-entrenamiento').reset();
+    } catch (e) {
+      mensaje.textContent = 'No se pudo guardar en este navegador.';
+      mensaje.style.color = 'var(--rojo-error)';
+    }
+    mensaje.classList.add('visible');
   });
 </script>
 
