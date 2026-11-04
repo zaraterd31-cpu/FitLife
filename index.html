@@ -675,6 +675,7 @@
 
   // ---- Registro de entrenamiento (guardado en localStorage) ----
   var CLAVE_SERIES = 'fitlife_series';
+  var URL_SCRIPT_ENTRENAMIENTO = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
   function leerSeries() {
     try {
@@ -741,6 +742,21 @@
       mensaje.textContent = 'Serie guardada.';
       mensaje.style.color = 'var(--verde-ok)';
       document.getElementById('form-entrenamiento').reset();
+
+      // También se envía a Google Sheets (hoja "Entrenamientos")
+      fetch(URL_SCRIPT_ENTRENAMIENTO, {
+        method: 'POST',
+        body: JSON.stringify({
+          ejercicio: ejercicio,
+          fecha: fecha,
+          serie: serie,
+          kilos: kilos,
+          repeticiones: repeticiones
+        })
+      }).catch(function () {
+        mensaje.textContent = 'Serie guardada en este navegador, pero no se pudo enviar a Google Sheets.';
+        mensaje.style.color = 'var(--rojo-error)';
+      });
     } catch (e) {
       mensaje.textContent = 'No se pudo guardar en este navegador.';
       mensaje.style.color = 'var(--rojo-error)';
