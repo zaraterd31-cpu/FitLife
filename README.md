@@ -1,1 +1,1 @@
-hola 
+ "Responsive is better than fast.
