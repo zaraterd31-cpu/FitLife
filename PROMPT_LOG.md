@@ -63,7 +63,7 @@ Serie guardada.
 
 ### Caso extra — mismo ejercicio con mayúsculas y minúsculas (después de la Decisión 2)
 - **Deploy responde:** Sí — probado el 17/11/2026 a las 22:45.
-- **Input exacto:** "sentadilla" 20/11/2026, serie 2, 60 kg × 6; "SENTADILLA" 21/11/2026, serie 3, 60 kg × 6; y una serie de 70 kg × 5 (FECHA Y CÓMO ESCRIBISTE EL NOMBRE).
+- **Input exacto:** "sentadilla" 20/11/2026, serie 2, 60 kg × 6; "SENTADILLA" 21/11/2026, serie 3, 60 kg × 6; y una serie de 70 kg × 5 14/11/2026 SenTAdilla
 - **Output real (copiado y pegado):**
 ```
 Serie guardada.
