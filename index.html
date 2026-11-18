@@ -704,8 +704,15 @@
     return a.kilos > b.kilos || (a.kilos === b.kilos && a.repeticiones > b.repeticiones);
   }
 
-  function analizarProgreso(series, ejercicio) {
-    var clave = normalizarEjercicio(ejercicio);
+  function nombreBonito(nombre) {
+    // Muestra el ejercicio con mayúscula inicial: "press banca" -> "Press banca"
+    var limpio = nombre.trim().replace(/\s+/g, ' ').toLowerCase();
+    return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+  }
+
+  function analizarProgreso(series, ejercicioEscrito) {
+    var ejercicio = nombreBonito(ejercicioEscrito);
+    var clave = normalizarEjercicio(ejercicioEscrito);
     var mejorPorFecha = {};
     for (var i = 0; i < series.length; i++) {
       var s = series[i];
