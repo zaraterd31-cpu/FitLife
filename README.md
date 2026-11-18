@@ -1,1 +1,0 @@
- "Responsive is better than fast.
