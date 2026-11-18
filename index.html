@@ -430,6 +430,20 @@
     width: 100%;
     margin-top: 8px;
   }
+
+  /* Detector de estancamiento */
+  .resultado-progreso {
+    display: none;
+    margin-top: 14px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .resultado-progreso.visible { display: block; }
+  .resultado-progreso.estancado { background-color: #FFF1E8; color: #A4471A; border-left: 4px solid var(--naranja-acento); }
+  .resultado-progreso.progreso { background-color: #E7F3E7; color: var(--verde-ok); border-left: 4px solid var(--verde-ok); }
+  .resultado-progreso.pocos-datos { background-color: #E3F0F9; color: var(--azul-oscuro); border-left: 4px solid var(--azul-principal); }
 </style>
 </head>
 <body>
@@ -510,6 +524,7 @@
 
     <button type="submit" class="btn-primary">Guardar serie</button>
     <p class="mensaje-confirmacion" id="mensaje-entrenamiento">Serie guardada.</p>
+    <div class="resultado-progreso" id="resultado-progreso" aria-live="polite"></div>
   </form>
 </section>
 
@@ -677,6 +692,59 @@
   var CLAVE_SERIES = 'fitlife_series';
   var URL_SCRIPT_ENTRENAMIENTO = 'https://script.google.com/macros/s/AKfycbw4S4BjZ-S5XumSFjzCCcRVsb8rOTDSSMMU1GJY-eZXr_TljNw5nNcHbL1Dz3osNaHM/exec';
 
+  // ---- Detector de estancamiento ----
+  // Una "sesión" = todas las series de un ejercicio en una misma fecha.
+  // La mejor serie de cada sesión es la de más kilos; si empatan, la de más repeticiones.
+  function normalizarEjercicio(nombre) {
+    return nombre.trim().replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  function esMejor(a, b) {
+    // true si la serie a supera a la serie b
+    return a.kilos > b.kilos || (a.kilos === b.kilos && a.repeticiones > b.repeticiones);
+  }
+
+  function analizarProgreso(series, ejercicio) {
+    var clave = normalizarEjercicio(ejercicio);
+    var mejorPorFecha = {};
+    for (var i = 0; i < series.length; i++) {
+      var s = series[i];
+      if (normalizarEjercicio(s.ejercicio) !== clave) continue;
+      if (!mejorPorFecha[s.fecha] || esMejor(s, mejorPorFecha[s.fecha])) {
+        mejorPorFecha[s.fecha] = s;
+      }
+    }
+    var fechas = Object.keys(mejorPorFecha).sort();
+    if (fechas.length < 3) {
+      return {
+        tipo: 'pocos-datos',
+        texto: 'Registra al menos 3 sesiones de ' + ejercicio + ' para analizar tu progreso (llevas ' + fechas.length + ').'
+      };
+    }
+    var ultimas = fechas.slice(-3).map(function (f) { return mejorPorFecha[f]; });
+    var base = ultimas[0];
+    var mejoro = esMejor(ultimas[1], base) || esMejor(ultimas[2], base);
+    if (mejoro) {
+      var actual = ultimas[2];
+      return {
+        tipo: 'progreso',
+        texto: '✅ Vas progresando en ' + ejercicio + ': tu mejor serie en la última sesión fue ' + actual.kilos + ' kg × ' + actual.repeticiones + '.'
+      };
+    }
+    return {
+      tipo: 'estancado',
+      texto: '⚠️ Llevas 3 sesiones estancado en ' + ejercicio + ' (' + base.kilos + ' kg × ' + base.repeticiones +
+        '). Prueba subir 1-2 repeticiones o bajar el peso 10% una semana.'
+    };
+  }
+
+  function mostrarProgreso(ejercicio) {
+    var caja = document.getElementById('resultado-progreso');
+    var resultado = analizarProgreso(leerSeries(), ejercicio);
+    caja.className = 'resultado-progreso visible ' + resultado.tipo;
+    caja.textContent = resultado.texto;
+  }
+
   function leerSeries() {
     try {
       var datos = JSON.parse(localStorage.getItem(CLAVE_SERIES));
@@ -742,6 +810,7 @@
       mensaje.textContent = 'Serie guardada.';
       mensaje.style.color = 'var(--verde-ok)';
       document.getElementById('form-entrenamiento').reset();
+      mostrarProgreso(ejercicio);
 
       // También se envía a Google Sheets (hoja "Entrenamientos")
       fetch(URL_SCRIPT_ENTRENAMIENTO, {
