@@ -27,7 +27,7 @@ Para comparar el nombre del ejercicio no se distinguen mayúsculas ni espacios d
 - Caso límite: el mismo peso pero con más reps (40 × 8, 40 × 8, 40 × 9) cuenta como progreso, no como estancamiento.
 - Si recargo la página y guardo otra serie, el análisis toma en cuenta las series anteriores (se leen de `localStorage`).
 
-**Auditado por:** NOMBRE DE TU COMPAÑERO — **Cambios que pidió:** QUÉ TE CUESTIONÓ
+**Auditado por:** Matias Rodete — **Cambios que pidió:** que pusiera abajo las series que faltaban pr registrar
 
 ---
 
