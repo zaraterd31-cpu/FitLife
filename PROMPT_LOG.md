@@ -27,44 +27,36 @@ Para comparar el nombre del ejercicio no se distinguen mayúsculas ni espacios d
 - Caso límite: el mismo peso pero con más reps (40 × 8, 40 × 8, 40 × 9) cuenta como progreso, no como estancamiento.
 - Si recargo la página y guardo otra serie, el análisis toma en cuenta las series anteriores (se leen de `localStorage`).
 
-**Auditado por:** (nombre de tu compañero) — **Cambios que pidió:** (qué campo cuestionó y qué cambiaste)
+**Auditado por:** NOMBRE DE TU COMPAÑERO — **Cambios que pidió:** QUÉ TE CUESTIONÓ
 
 ---
 
 ## Paso 2 — Construcción: decisiones aceptar / rechazar / revisar
 
-> Llena esto con lo que de verdad te proponga la IA. Copia el prompt y la parte de la respuesta.
-
 ### Decisión 1
-- **Prompt que usé:** (pega el que usaste para pedir la especificación)
+- **Prompt que usé:** Le pasé a Claude las instrucciones completas del Assignment 2 y le escribí: "con mi proyecto de fit life". Después le pegué mi index.html.
 - **Lo que propuso la IA:** guardar el historial en una clave nueva de `localStorage` (`fitlife_entrenamientos`) y "agregarla porque la app todavía no lo guarda", con objetos sin número de serie.
 - **Campo de la especificación en juego:** Qué datos/inputs necesita.
 - **Decisión:** Rechazar
 - **Por qué:** mi app ya guarda las series en `fitlife_series` con número de serie. Con una clave nueva se duplicarían los datos y las series que ya tengo no contarían para el análisis.
 
-### Decisión 2 (opcional, sube el nivel)
-- **Prompt que usé:**
-- **Lo que propuso la IA:**
-- **Campo de la especificación en juego:**
-- **Decisión:**
-- **Por qué:**
-
 ---
 
 ## Paso 3 — Validación (antes de S20)
 
-- **Deploy responde:** Sí / No (fecha y hora de la prueba)
-- **Input exacto:**
+- **Deploy responde:** Sí — probado el 17/11/2026 a las 22:25 en https://fit-life-alpha.vercel.app
+- **Input exacto:** tres series de "press banca", serie 1, 60 kg, 8 repeticiones, guardadas en 3 fechas distintas (10/11/2026, 12/11/2026 y 14/11/2026).
 - **Output real (copiado y pegado):**
 ```
-(pega aquí el texto exacto que mostró la app)
+Serie guardada.
+⚠️ Llevas 3 sesiones estancado en press banca (60 kg × 8). Prueba subir 1-2 repeticiones o bajar el peso 10% una semana.
 ```
-- **Veredicto:** Aceptar / Rechazar / Revisar
-- **Razón (cita el output):**
+- **Veredicto:** Aceptar
+- **Razón:** el output muestra "60 kg × 8" y la alerta ⚠️ al guardar la tercera sesión sin mejorar, que es exactamente lo que dice el Caso 1 de mi especificación.
 
 ---
 
 ## Uso de IA
-- **Herramienta(s):**
-- **Para qué la usé:**
-- **Qué decidí o verifiqué yo:**
+- **Herramienta(s):** Claude (chat).
+- **Para qué la usé:** para redactar la especificación de 3 campos y generar el código del detector de estancamiento dentro de mi index.html.
+- **Qué decidí o verifiqué yo:** rechacé que se creara una clave nueva de localStorage y pedí usar la que ya tenía (fitlife_series); subí el código a GitHub, verifiqué el deploy en Vercel y probé el Caso 1 en la página real.
