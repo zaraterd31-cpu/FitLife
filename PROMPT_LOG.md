@@ -27,8 +27,7 @@ Para comparar el nombre del ejercicio no se distinguen mayúsculas ni espacios d
 - Caso límite: el mismo peso pero con más reps (40 × 8, 40 × 8, 40 × 9) cuenta como progreso, no como estancamiento.
 - Si recargo la página y guardo otra serie, el análisis toma en cuenta las series anteriores (se leen de `localStorage`).
 
-**Auditado por:** Matias Rodete — **Cambios que pidió:** que pusiera abajo las series que faltaban pr registrar
-
+**Auditado por:** Matias rodete. Me pidió que salieran cuantas series faltan por registrar 
 ---
 
 ## Paso 2 — Construcción: decisiones aceptar / rechazar / revisar
@@ -40,10 +39,18 @@ Para comparar el nombre del ejercicio no se distinguen mayúsculas ni espacios d
 - **Decisión:** Rechazar
 - **Por qué:** mi app ya guarda las series en `fitlife_series` con número de serie. Con una clave nueva se duplicarían los datos y las series que ya tengo no contarían para el análisis.
 
+### Decisión 2
+- **Prompt que usé:** "si" (después de pedirle a Claude que me ayudara a subir de nivel).
+- **Lo que noté en el output:** en mi prueba en el deploy el mensaje salió "✅ Vas progresando en sentadilla: tu mejor serie en la última sesión fue 33 kg × 5.", con el ejercicio en minúsculas tal como lo escribí. Si lo escribía en mayúsculas, el mensaje salía diferente aunque fuera el mismo ejercicio.
+- **Campo de la especificación en juego:** Qué hace (el texto exacto del mensaje y que el nombre no dependa de mayúsculas).
+- **Decisión:** Revisar
+- **Por qué:** el análisis ya trataba "sentadilla" y "SENTADILLA" como el mismo ejercicio, así que el mensaje también debía verse igual. Pedí que se muestre siempre con mayúscula inicial ("Sentadilla").
+
 ---
 
 ## Paso 3 — Validación (antes de S20)
 
+### Caso 1 (estancado)
 - **Deploy responde:** Sí — probado el 17/11/2026 a las 22:25 en https://fit-life-alpha.vercel.app
 - **Input exacto:** tres series de "press banca", serie 1, 60 kg, 8 repeticiones, guardadas en 3 fechas distintas (10/11/2026, 12/11/2026 y 14/11/2026).
 - **Output real (copiado y pegado):**
@@ -54,9 +61,20 @@ Serie guardada.
 - **Veredicto:** Aceptar
 - **Razón:** el output muestra "60 kg × 8" y la alerta ⚠️ al guardar la tercera sesión sin mejorar, que es exactamente lo que dice el Caso 1 de mi especificación.
 
+### Caso extra — mismo ejercicio con mayúsculas y minúsculas (después de la Decisión 2)
+- **Deploy responde:** Sí — probado el 17/11/2026 a las 22:45.
+- **Input exacto:** "sentadilla" 20/11/2026, serie 2, 60 kg × 6; "SENTADILLA" 21/11/2026, serie 3, 60 kg × 6; y una serie de 70 kg × 5 (FECHA Y CÓMO ESCRIBISTE EL NOMBRE).
+- **Output real (copiado y pegado):**
+```
+Serie guardada.
+✅ Vas progresando en Sentadilla: tu mejor serie en la última sesión fue 70 kg × 5.
+```
+- **Veredicto:** Aceptar
+- **Razón:** el mensaje dice "Sentadilla" con mayúscula aunque lo escribí en minúsculas y en mayúsculas, y tomó todas las series como el mismo ejercicio, como dice mi especificación.
+
 ---
 
 ## Uso de IA
 - **Herramienta(s):** Claude (chat).
 - **Para qué la usé:** para redactar la especificación de 3 campos y generar el código del detector de estancamiento dentro de mi index.html.
-- **Qué decidí o verifiqué yo:** rechacé que se creara una clave nueva de localStorage y pedí usar la que ya tenía (fitlife_series); subí el código a GitHub, verifiqué el deploy en Vercel y probé el Caso 1 en la página real.
+- **Qué decidí o verifiqué yo:** rechacé que se creara una clave nueva de localStorage y pedí usar la que ya tenía (fitlife_series); al probar en el deploy vi que el nombre del ejercicio salía en minúsculas y pedí revisarlo; subí cada cambio a GitHub y probé los casos en la página real.
