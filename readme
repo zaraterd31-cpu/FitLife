@@ -1,1 +1,70 @@
 
+# FitLife
+
+**Deploy:** https://fit-life-alpha.vercel.app
+**Repositorio:** https://github.com/zaraterd31-cpu/FitLife
+
+FitLife es una página web para personas que quieren entrenar con seguimiento. Permite registrarse para que un entrenador te contacte y llevar un registro de tus series del gym, con un detector que te avisa si llevas varias sesiones estancado en un ejercicio.
+
+## Funciones
+
+1. **Registro de usuario** ("Comienza gratis"): pide nombre, correo y teléfono, valida cada campo y los envía a Google Sheets mediante Google Apps Script.
+2. **Registro de entrenamiento** ("Registra tu entrenamiento"): guarda cada serie (ejercicio, fecha, número de serie, kilos y repeticiones) en el navegador (`localStorage`, clave `fitlife_series`) y también la envía a Google Sheets (hoja "Entrenamientos").
+3. **Detector de estancamiento**: cada vez que guardas una serie, compara tus últimas 3 sesiones de ese ejercicio y te dice si vas progresando, si estás estancado o cuántas sesiones te faltan para analizarlo.
+
+## Cómo usarla
+
+1. Entra a https://fit-life-alpha.vercel.app
+2. Da clic en **Comienza gratis**, llena el formulario y envíalo.
+3. Baja a **Registra tu entrenamiento**, escribe un ejercicio (por ejemplo, "Press banca"), la fecha, la serie, los kilos y las repeticiones, y da clic en **Guardar serie**.
+4. Repite en 3 fechas distintas para ver el análisis de progreso debajo del botón.
+
+## Tecnologías y dependencias externas
+
+- HTML, CSS y JavaScript en un solo archivo (`index.html`).
+- **Vercel** (plan Hobby) para el hosting.
+- **Google Apps Script** como intermediario para escribir en **Google Sheets**.
+- **localStorage** del navegador para el historial de series.
+- Imágenes enlazadas desde Unsplash.
+
+---
+
+## Decisiones de diseño vs. sugerencias del IS
+
+### Entrada 1 — Funcionalidad (Assignment 2): dónde guardar el historial
+- **Qué propuso el IS (Claude):** al pedirle el detector de estancamiento, propuso guardar el historial en una clave nueva de `localStorage` (`fitlife_entrenamientos`), "porque la app todavía no lo guarda", con objetos sin número de serie.
+- **Qué decidí:** Rechazar.
+- **Por qué:** mi app ya guardaba las series en `fitlife_series`, con número de serie. Una clave nueva duplicaba los datos, y las series que ya tenía guardadas no habrían contado para el análisis. Pedí usar la clave existente.
+- **Verificación:** commit `b48b04a` ("Detector de estancamiento usando fitlife_series existente; rechazo crear clave nueva para no duplicar datos") y Caso 1 probado en el deploy el 17/11/2026 (ver `PROMPT_LOG.md`).
+
+### Entrada 2 — Funcionalidad (Assignment 2): nombre del ejercicio en el mensaje
+- **Qué propuso el IS (Claude):** el código comparaba los ejercicios sin importar mayúsculas, pero el mensaje mostraba el nombre tal como lo escribía el usuario ("sentadilla", "SENTADILLA").
+- **Qué decidí:** Revisar.
+- **Por qué:** lo detecté yo al probar en el deploy. Si el análisis trata "sentadilla" y "SENTADILLA" como el mismo ejercicio, el mensaje también debe verse igual. Pedí que siempre se muestre con mayúscula inicial ("Sentadilla").
+- **Verificación:** commit `60bc017` y caso extra probado el 17/11/2026: con "sentadilla", "SENTADILLA" y "SenTAdilla" el mensaje dijo "Vas progresando en Sentadilla" (ver `PROMPT_LOG.md`).
+
+### Entrada 3 — Escalabilidad (Sesión 22): migrar o no la base de datos
+- **Qué propuso el IS (Claude):** en mi diagnóstico de escalabilidad concluyó que mi cuello de botella es la arquitectura: uso Google Sheets como base de datos y cada serie es una ejecución de Apps Script. Propuso migrar a una base de datos real (por ejemplo, Supabase) y mandar las series de un entrenamiento en un solo envío.
+- **Qué decidí:** Revisar. No migro todavía; documento cuándo hacerlo.
+- **Por qué:** con mis números reales (unos 20 usuarios, ~20 series por semana cada uno), envío unas 1,740 series al mes, unas 8,700 celdas en Sheets. Con el límite de 10 millones de celdas eso alcanza para muchos años; el límite se rompe cerca de 100 veces mis usuarios (~2,000 usuarios: la hoja se llenaría en ~11.5 meses). Además, el límite de 30 ejecuciones simultáneas de Apps Script solo es un riesgo real a escala de miles de usuarios. Migrar ahora agregaría login y una base de datos que mi app todavía no necesita. **Regla que me pongo:** si paso de ~500 usuarios activos o la hoja supera 1 millón de celdas, migro los datos y agrupo los envíos.
+- **Verificación:** límite de 30 ejecuciones simultáneas por usuario revisado por mí en la página oficial de cuotas de Apps Script (https://developers.google.com/apps-script/guides/services/quotas). Límite de celdas: https://support.google.com/drive/answer/37603
+
+### Entrada 4 — Seguridad: texto que se envía a Google Sheets
+- **Qué propuso el IS (Claude):** al revisar mi código, señaló que lo que escribe el usuario (nombre y ejercicio) se manda sin filtrar a Google Sheets. Si alguien escribe un texto que empieza con `=`, `+`, `-` o `@`, Sheets lo puede interpretar como fórmula (inyección de fórmulas), y tampoco había límite de largo. Propuso validar los campos antes de enviarlos.
+- **Qué decidí:** Aceptar con ajustes.
+- **Qué cambié:** el ejercicio tiene que empezar con una letra y tener máximo 40 caracteres; el nombre solo acepta letras y espacios (máximo 60). También puse límites realistas: serie de 1 a 20, kilos de 0 a 500 y repeticiones de 1 a 100, para que no lleguen datos absurdos a la hoja ni al detector.
+- **Por qué:** mi hoja guarda datos personales (correo y teléfono), así que no debe aceptar fórmulas ni texto basura. **Límite que reconozco:** la validación está en el navegador; alguien que mande datos directo a la URL de Apps Script podría saltársela. El siguiente paso sería validar también dentro del Apps Script.
+- **Verificación:** [COMPLETAR después de probar en el deploy: escribí "=1+1" como ejercicio y el resultado fue: ___; escribí "Press banca" y se guardó normal: ___]
+
+---
+
+## Nota sobre el historial de commits
+
+Muchos commits antiguos tienen el mensaje genérico "Update index.html" porque editaba el archivo directo en GitHub. Lo que representan:
+
+- **2–24 sep 2026** (`17ace57` a `6d9d42a`): primera versión y diseño del mockup (Assignment 1).
+- **28 sep – 5 oct 2026** (`c8df2c8` a `3cdd323`): ajustes de contenido y diseño; en `444a73a` quité un formulario de rastreo nutricional que no formaba parte del alcance y en `3cdd323` cambié los íconos por SVG de un solo color.
+- **4 nov 2026** (`4858561`): agregué la sección "Registra tu entrenamiento" (guardado en `localStorage`).
+- **4 nov 2026** (`946c3fd`): conecté el registro de entrenamiento con Google Sheets mediante Apps Script.
+
+Desde Assignment 2 escribo mensajes de commit que describen la decisión.
