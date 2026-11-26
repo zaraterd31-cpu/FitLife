@@ -604,9 +604,12 @@
         id: 'nombre',
         valor: document.getElementById('campo-nombre').value.trim(),
         validar: function (valor) {
-          return valor.length > 0;
+          // Seguridad: solo letras y espacios, máximo 60 caracteres.
+          // Evita que se mande a Google Sheets texto que empiece con = + - @ (se ejecutaría como fórmula).
+          var patronNombre = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{0,59}$/;
+          return patronNombre.test(valor);
         },
-        mensajeError: 'Ingresa tu nombre.'
+        mensajeError: 'Ingresa tu nombre (solo letras, máximo 60).'
       },
       {
         id: 'correo',
@@ -775,11 +778,13 @@
     var repeticiones = Number(repsTxt);
 
     var reglas = [
-      { id: 'ejercicio', ok: ejercicio.length > 0, mensaje: 'Ingresa el ejercicio.' },
+      // Seguridad: el ejercicio debe empezar con letra y tener máximo 40 caracteres,
+      // para que nadie pueda mandar una fórmula (=, +, -, @) ni texto enorme a Google Sheets.
+      { id: 'ejercicio', ok: /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 ()\-]{0,39}$/.test(ejercicio), mensaje: 'Escribe el ejercicio con letras (máximo 40 caracteres).' },
       { id: 'fecha', ok: fecha !== '', mensaje: 'Elige una fecha.' },
-      { id: 'serie', ok: serieTxt !== '' && Number.isInteger(serie) && serie >= 1, mensaje: 'Ingresa un número de serie entero (1 o más).' },
-      { id: 'kilos', ok: kilosTxt !== '' && isFinite(kilos) && kilos >= 0, mensaje: 'Ingresa los kilos (0 o más).' },
-      { id: 'repeticiones', ok: repsTxt !== '' && Number.isInteger(repeticiones) && repeticiones >= 1, mensaje: 'Ingresa repeticiones enteras (1 o más).' }
+      { id: 'serie', ok: serieTxt !== '' && Number.isInteger(serie) && serie >= 1 && serie <= 20, mensaje: 'Ingresa un número de serie entero (de 1 a 20).' },
+      { id: 'kilos', ok: kilosTxt !== '' && isFinite(kilos) && kilos >= 0 && kilos <= 500, mensaje: 'Ingresa los kilos (de 0 a 500).' },
+      { id: 'repeticiones', ok: repsTxt !== '' && Number.isInteger(repeticiones) && repeticiones >= 1 && repeticiones <= 100, mensaje: 'Ingresa repeticiones enteras (de 1 a 100).' }
     ];
 
     var hayErrores = false;
